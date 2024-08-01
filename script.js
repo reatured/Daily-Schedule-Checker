@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+import { getDatabase, ref, set, get,update, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,8 +19,13 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Function to get today's date in YYYY-MM-DD format
+// Function to get today's date in YYYY-MM-DD format
 function getFormattedDate() {
     const today = new Date();
+    if (today.getHours() < 4) {
+        // If the time is before 4 AM, use the previous date
+        today.setDate(today.getDate() - 1);
+    }
     return today.toISOString().split('T')[0];
 }
 
@@ -28,13 +33,27 @@ function getFormattedDate() {
 function saveData() {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     const date = getFormattedDate();
-    checkboxes.forEach(checkbox => {
-        const name = checkbox.parentElement.textContent.trim();
-        const timeOfDay = checkbox.closest('tr').querySelector('td').textContent.trim();
-        set(ref(database, `checkboxes/${date}/${name}`), {
-            checked: checkbox.checked,
-            timeOfDay: timeOfDay
+    const dateRef = ref(database, `checkboxes/${date}`);
+
+    get(dateRef).then((snapshot) => {
+        if (!snapshot.exists()) {
+            // New date detected, reset all checkboxes
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Save the state of all checkboxes
+        checkboxes.forEach(checkbox => {
+            const name = checkbox.parentElement.textContent.trim();
+            const timeOfDay = checkbox.closest('tr').querySelector('td').textContent.trim();
+            set(ref(database, `checkboxes/${date}/${name}`), {
+                checked: checkbox.checked,
+                timeOfDay: timeOfDay
+            });
         });
+    }).catch((error) => {
+        console.error('Error checking date:', error);
     });
 }
 
@@ -63,16 +82,40 @@ document.addEventListener('DOMContentLoaded', (event) => {
 function loadData() {
     const dbRef = ref(database);
     const date = getFormattedDate();
+    const dateRef = ref(database, `checkboxes/${date}`);
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        const name = checkbox.parentElement.textContent.trim();
-        get(child(dbRef, `checkboxes/${date}/${name}`)).then(snapshot => {
-            if (snapshot.exists()) {
-                checkbox.checked = snapshot.val().checked;
-            }
-        }).catch(error => {
-            console.error(error);
-        });
+
+    get(dateRef).then((snapshot) => {
+        if (!snapshot.exists()) {
+            // New date detected, reset all checkboxes and create new date entry in the database
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Create new date entry in the database
+            const updates = {};
+            checkboxes.forEach(checkbox => {
+                const name = checkbox.parentElement.textContent.trim();
+                updates[`checkboxes/${date}/${name}`] = { checked: false };
+            });
+            update(dbRef, updates).catch(error => {
+                console.error('Error creating new date entry:', error);
+            });
+        } else {
+            // Load the state of all checkboxes
+            checkboxes.forEach(checkbox => {
+                const name = checkbox.parentElement.textContent.trim();
+                get(child(dbRef, `checkboxes/${date}/${name}`)).then(snapshot => {
+                    if (snapshot.exists()) {
+                        checkbox.checked = snapshot.val().checked;
+                    }
+                }).catch(error => {
+                    console.error(error);
+                });
+            });
+        }
+    }).catch((error) => {
+        console.error('Error checking date:', error);
     });
 }
 
@@ -99,6 +142,13 @@ function testConnection() {
 function setDate() {
     const dateElement = document.getElementById('date');
     const today = new Date();
+    
+    // Check if the current time is before 4 AM
+    if (today.getHours() < 4) {
+        // If it is, set the date to the previous day
+        today.setDate(today.getDate() - 1);
+    }
+    
     const formattedDate = today.toLocaleDateString();
     dateElement.textContent = formattedDate;
 }
