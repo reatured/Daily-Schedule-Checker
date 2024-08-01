@@ -1,0 +1,25 @@
+body {
+    font-family: 'Alata', sans-serif;
+    text-align: center; /* Center-align all text in the body */
+}
+
+h1, h2 {
+    text-align: center; /* Ensure headers are centered */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto; /* Center-align the table */
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center; /* Center-align table content */
+}
+
+th {
+    background-color: #f2f2f2;
+}
