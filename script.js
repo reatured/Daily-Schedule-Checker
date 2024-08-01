@@ -38,6 +38,27 @@ function saveData() {
     });
 }
 
+document.addEventListener('DOMContentLoaded', (event) => {
+    function addTodaysDate() {
+        const dateElement = document.getElementById('date');
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = today.toLocaleDateString(undefined, options);
+    }
+
+    function addCheckboxListeners() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                saveData();
+            });
+        });
+    }
+
+    addTodaysDate();
+    addCheckboxListeners();
+});
+
 // Function to load checkbox states from Firebase
 function loadData() {
     const dbRef = ref(database);
@@ -106,3 +127,4 @@ window.onload = () => {
     setDate();
     updateDateTime();
 };
+
