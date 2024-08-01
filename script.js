@@ -103,28 +103,19 @@ function setDate() {
     dateElement.textContent = formattedDate;
 }
 
-// Function to update the date and time in real-time
-function updateDateTime() {
-    const dateElement = document.getElementById('date');
-    setInterval(() => {
-        const now = new Date();
-        const formattedDateTime = now.toLocaleString();
-        dateElement.textContent = formattedDateTime;
-    }, 1000);
-}
+
 
 // Attach functions to the window object to make them globally accessible
 window.saveData = saveData;
 window.loadData = loadData;
 window.testConnection = testConnection;
 window.setDate = setDate;
-window.updateDateTime = updateDateTime;
+
 
 // Load data and set date when the page loads
 window.onload = () => {
     loadData();
     testConnection();
     setDate();
-    updateDateTime();
 };
 
