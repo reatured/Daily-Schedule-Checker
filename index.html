@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Alata&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <h1>Daily Schedule Checker</h1>
-    <h2 id="subtitle"><span id="date"></span></h2>
+    <p id="date"></p>
+    
     <table>
         <tr>
             <th>Time of Day</th>
@@ -20,31 +19,25 @@
         <tr>
             <td>Morning</td>
             <td>
-                <ul>
-                    <li><input type="checkbox" id="morning1"> Run</li>
-                    <li><input type="checkbox" id="morning2"> Work out</li>
-                    <li><input type="checkbox" id="morning3"> Drink a coffee</li>
-                    <li><input type="checkbox" id="morning4"> Eat a sandwich</li>
-                </ul>
+                <div class="task"><input type="checkbox" id="morning1"> Run</div>
+                <div class="task"><input type="checkbox" id="morning2"> Work out</div>
+                <div class="task"><input type="checkbox" id="morning3"> Drink a coffee</div>
+                <div class="task"><input type="checkbox" id="morning4"> Eat a sandwich</div>
             </td>
         </tr>
         <tr>
             <td>Midday</td>
-            <td><input type="checkbox" id="midday1"> Work</td>
+            <td><div class="task"><input type="checkbox" id="midday1"> Work</div></td>
         </tr>
         <tr>
             <td>Night</td>
             <td>
-                <ul>
-                    <li><input type="checkbox" id="night1"> Ironing shirt next day</li>
-                    <li><input type="checkbox" id="night2"> Make a breakfast</li>
-                </ul>
+                <div class="task"><input type="checkbox" id="night1"> Ironing shirt next day</div>
+                <div class="task"><input type="checkbox" id="night2"> Make a breakfast</div>
             </td>
         </tr>
     </table>
-    <button onclick="saveData()">Save</button>
 
     <script src="script.js" type="module"></script>
 </body>
-
 </html>

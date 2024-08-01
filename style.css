@@ -11,15 +11,31 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin: 0 auto; /* Center-align the table */
+    border: 1px solid #ddd; /* Add border to the table */
 }
 
 th,
 td {
-    border: 1px solid #ddd;
+    border: 1px solid #ddd; /* Add border to table cells */
     padding: 8px;
-    text-align: center; /* Center-align table content */
+    text-align: left; /* Left-align table content */
 }
 
 th {
     background-color: #f2f2f2;
+}
+
+.task {
+    text-align: left; /* Left-align tasks */
+    padding: 8px 0;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    text-align: left;
+    padding: 8px 0;
 }
