@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,23 +10,29 @@
         body {
             font-family: 'Alata', sans-serif;
         }
+
         h1 {
             text-align: center;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
     </style>
 </head>
+
 <body>
     <h1>Daily Schedule Checker</h1>
     <table>
@@ -65,23 +72,21 @@
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
-      
+
         // Your web app's Firebase configuration
         const firebaseConfig = {
-          apiKey: "YOUR_API_KEY",
-          authDomain: "YOUR_AUTH_DOMAIN",
-          projectId: "YOUR_PROJECT_ID",
-          storageBucket: "YOUR_STORAGE_BUCKET",
-          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-          appId: "YOUR_APP_ID",
-          measurementId: "YOUR_MEASUREMENT_ID",
-          databaseURL: "YOUR_DATABASE_URL"
+            apiKey: "AIzaSyCHQ5kHLkZ9KaAGeMkk32b1PrPOuGC9tAY",
+            authDomain: "daily-schedule-checker.firebaseapp.com",
+            projectId: "daily-schedule-checker",
+            storageBucket: "daily-schedule-checker.appspot.com",
+            messagingSenderId: "504550360097",
+            appId: "1:504550360097:web:6511d9c4f1824fb2e7cf60",
+            measurementId: "G-RCP6GLD9K5",
+            databaseURL: "https://daily-schedule-checker-default-rtdb.firebaseio.com/"
         };
-      
+
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const database = getDatabase(app);
 
         // Function to save checkbox states to Firebase
@@ -110,8 +115,36 @@
             });
         }
 
+        // Function to test Firebase connection
+        function testConnection() {
+            const testRef = ref(database, 'testConnection');
+            set(testRef, { connected: true })
+                .then(() => {
+                    return get(testRef);
+                })
+                .then(snapshot => {
+                    if (snapshot.exists() && snapshot.val().connected) {
+                        console.log('Firebase connection successful');
+                    } else {
+                        console.error('Firebase connection failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Firebase connection error:', error);
+                });
+        }
+
+        // Attach functions to the window object to make them globally accessible
+        window.saveData = saveData;
+        window.loadData = loadData;
+        window.testConnection = testConnection;
+
         // Load data when the page loads
-        window.onload = loadData;
+        window.onload = () => {
+            loadData();
+            testConnection();
+        };
     </script>
 </body>
+
 </html>
