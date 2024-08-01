@@ -36,7 +36,6 @@ function saveData() {
             timeOfDay: timeOfDay
         });
     });
-    alert('Data saved!');
 }
 
 // Function to load checkbox states from Firebase
