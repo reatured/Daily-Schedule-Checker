@@ -10,34 +10,11 @@
 <body>
     <h1>Daily Schedule Checker</h1>
     <p id="date"></p>
+    <div id="table"></div>
     
-    <table>
-        <tr>
-            <th>Time of Day</th>
-            <th>Activities</th>
-        </tr>
-        <tr>
-            <td>Morning</td>
-            <td>
-                <div class="task"><input type="checkbox" id="morning1"> Run</div>
-                <div class="task"><input type="checkbox" id="morning2"> Work out</div>
-                <div class="task"><input type="checkbox" id="morning3"> Drink a coffee</div>
-                <div class="task"><input type="checkbox" id="morning4"> Eat a sandwich</div>
-            </td>
-        </tr>
-        <tr>
-            <td>Midday</td>
-            <td><div class="task"><input type="checkbox" id="midday1"> Work</div></td>
-        </tr>
-        <tr>
-            <td>Night</td>
-            <td>
-                <div class="task"><input type="checkbox" id="night1"> Ironing shirt next day</div>
-                <div class="task"><input type="checkbox" id="night2"> Make a breakfast</div>
-            </td>
-        </tr>
-    </table>
-
+    <input type="text" id="taskInput">
+    <button id="addTaskButton">Add Task</button>
+    
     <script src="script.js" type="module"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 import { getDatabase, ref, set, get,update, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
-
+let allData; 
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCHQ5kHLkZ9KaAGeMkk32b1PrPOuGC9tAY",
@@ -19,153 +19,55 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Function to get today's date in YYYY-MM-DD format
-// Function to get today's date in YYYY-MM-DD format
 function getFormattedDate() {
     const today = new Date();
-    if (today.getHours() < 4) {
-        // If the time is before 4 AM, use the previous date
-        today.setDate(today.getDate() - 1);
-    }
-    return today.toISOString().split('T')[0];
+const year = today.getFullYear();
+const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+const day = String(today.getDate()).padStart(2, '0');
+
+return `${year}-${month}-${day}`;
 }
 
-// Function to save checkbox states to Firebase
-function saveData() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    const date = getFormattedDate();
-    const dateRef = ref(database, `checkboxes/${date}`);
-
-    get(dateRef).then((snapshot) => {
-        if (!snapshot.exists()) {
-            // New date detected, reset all checkboxes
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-            });
-        }
-
-        // Save the state of all checkboxes
-        checkboxes.forEach(checkbox => {
-            const name = checkbox.parentElement.textContent.trim();
-            const timeOfDay = checkbox.closest('tr').querySelector('td').textContent.trim();
-            set(ref(database, `checkboxes/${date}/${name}`), {
-                checked: checkbox.checked,
-                timeOfDay: timeOfDay
-            });
-        });
-    }).catch((error) => {
-        console.error('Error checking date:', error);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    function addTodaysDate() {
-        const dateElement = document.getElementById('date');
-        const today = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        dateElement.textContent = today.toLocaleDateString(undefined, options);
-    }
-
-    function addCheckboxListeners() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (event) => {
-                saveData();
-            });
-        });
-    }
-
-    addTodaysDate();
-    addCheckboxListeners();
-});
-
-// Function to load checkbox states from Firebase
-function loadData() {
-    const dbRef = ref(database);
-    const date = getFormattedDate();
-    const dateRef = ref(database, `checkboxes/${date}`);
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
-    get(dateRef).then((snapshot) => {
-        if (!snapshot.exists()) {
-            // New date detected, reset all checkboxes and create new date entry in the database
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-            });
-
-            // Create new date entry in the database
-            const updates = {};
-            checkboxes.forEach(checkbox => {
-                const name = checkbox.parentElement.textContent.trim();
-                updates[`checkboxes/${date}/${name}`] = { checked: false };
-            });
-            update(dbRef, updates).catch(error => {
-                console.error('Error creating new date entry:', error);
-            });
+//function that save all the data from all dates to a variable and print to the console
+function getAllData() {
+    get(ref(database, '/')).then((snapshot) => {
+        if (snapshot.exists()) {
+            console.log(snapshot.val());
+            allData = snapshot.val();
+            return snapshot.val();
         } else {
-            // Load the state of all checkboxes
-            checkboxes.forEach(checkbox => {
-                const name = checkbox.parentElement.textContent.trim();
-                get(child(dbRef, `checkboxes/${date}/${name}`)).then(snapshot => {
-                    if (snapshot.exists()) {
-                        checkbox.checked = snapshot.val().checked;
-                    }
-                }).catch(error => {
-                    console.error(error);
-                });
-            });
+            console.log("No data available");
         }
     }).catch((error) => {
-        console.error('Error checking date:', error);
+        console.error(error);
     });
+
 }
 
-// Function to test Firebase connection
-function testConnection() {
-    const testRef = ref(database, 'testConnection');
-    set(testRef, { connected: true })
-        .then(() => {
-            return get(testRef);
-        })
-        .then(snapshot => {
-            if (snapshot.exists() && snapshot.val().connected) {
-                console.log('Firebase connection successful');
-            } else {
-                console.error('Firebase connection failed');
-            }
-        })
-        .catch(error => {
-            console.error('Firebase connection error:', error);
-        });
+//function that save all the data from a specific date to a variable and print to the console
+function getData(date) {
+    console.log(date);
+    console.log(getAllData()["checkboxes"][date]);
+    return getAllData()["checkboxes"][date];
 }
 
-// Function to set today's date in the subtitle
-function setDate() {
-    const dateElement = document.getElementById('date');
-    const today = new Date();
-    
-    // Check if the current time is before 4 AM
-    if (today.getHours() < 4) {
-        // If it is, set the date to the previous day
-        today.setDate(today.getDate() - 1);
+//function that gets today's data
+function getTodaysData() {
+    return getData(getFormattedDate());
+}
+// getAllData();
+// getData(getFormattedDate());
+
+//function that fill in the table div in the html with today's data
+fillTable(getFormattedDate());
+
+function fillTable(date) {
+    let table = document.getElementById("table");
+    let data = getData(date);
+    let tableHTML = "";
+    for(let i = 0; i < data.length; i++){
+        tableHTML += `<tr><td>${data[i].name}</td><td>${data[i].time}</td><td>${data[i].checked}</td></tr>`;
     }
-    
-    const formattedDate = today.toLocaleDateString();
-    dateElement.textContent = formattedDate;
+    table.innerHTML = tableHTML;
 }
-
-
-
-// Attach functions to the window object to make them globally accessible
-window.saveData = saveData;
-window.loadData = loadData;
-window.testConnection = testConnection;
-window.setDate = setDate;
-
-
-// Load data and set date when the page loads
-window.onload = () => {
-    loadData();
-    testConnection();
-    setDate();
-};
 
